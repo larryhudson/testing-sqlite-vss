@@ -83,8 +83,16 @@ async function main() {
         insertRowsStatement.run(text, textEmbeddingJson)
     }, { concurrency: 5 })
 
+    const insertIntoVirtualTableSql = `
+insert into vss_quotes(rowid, text_embedding)
+  select id, text_embedding from quotes;
+`
 
-    const searchQuery = 'coffee';
+    const insertIntoVirtualTableStatement = db.prepare(insertIntoVirtualTableSql);
+
+    insertIntoVirtualTableStatement.run();
+
+    const searchQuery = 'music';
     const searchQueryEmbeddingJson = await getEmbeddingJsonForText(searchQuery)
 
     const searchSql = `
